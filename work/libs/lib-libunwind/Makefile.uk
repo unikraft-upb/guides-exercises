@@ -1,0 +1,91 @@
+#  libunwind Makefile.uk
+#
+#  Authors: Vlad-Andrei Badoiu <vlad_andrei.badoiu@stud.acs.upb.ro>
+#
+#  Copyright (c) 2019, Politehnica University of Bucharest. All rights reserved.
+#
+#  Redistribution and use in source and binary forms, with or without
+#  modification, are permitted provided that the following conditions
+#  are met:
+#
+#  1. Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#  2. Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#  3. Neither the name of the copyright holder nor the names of its
+#     contributors may be used to endorse or promote products derived from
+#     this software without specific prior written permission.
+#
+#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+#  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+#  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+#  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+#  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+#  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+#  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+#  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+#  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+#  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+#  POSSIBILITY OF SUCH DAMAGE.
+#
+
+
+################################################################################
+# Library registration
+################################################################################
+$(eval $(call addlib_s,libunwind,$(CONFIG_LIBUNWIND)))
+
+ifeq ($(CONFIG_LIBUNWIND),y)
+ifneq ($(CONFIG_LIBCOMPILER_RT),y)
+$(error Require libcompiler_rt)
+endif
+endif
+
+################################################################################
+# Sources
+################################################################################
+LIBUNWIND_VERSION=7.0.0
+LIBUNWIND_URL=http://releases.llvm.org/$(LIBUNWIND_VERSION)/libunwind-$(LIBUNWIND_VERSION).src.tar.xz
+LIBUNWIND_PATCHDIR=$(LIBUNWIND_BASE)/patches
+$(eval $(call fetch,libunwind,$(LIBUNWIND_URL)))
+$(eval $(call patch,libunwind,$(LIBUNWIND_PATCHDIR),libunwind-$(LIBUNWIND_VERSION).src))
+
+################################################################################
+# Helpers
+################################################################################
+LIBUNWIND_SUBDIR=libunwind-$(LIBUNWIND_VERSION).src
+LIBUNWIND_SRC=$(LIBUNWIND_ORIGIN)/$(LIBUNWIND_SUBDIR)
+
+################################################################################
+# Library includes
+################################################################################
+CINCLUDES-$(CONFIG_LIBUNWIND) += -I$(LIBUNWIND_SRC)/include
+CXXINCLUDES-$(CONFIG_LIBUNWIND) += -I$(LIBUNWIND_SRC)/include
+
+LIBUNWIND_CINCLUDES-y   += -I$(LIBUNWIND_SRC)/src
+LIBUNWIND_CXXINCLUDES-y += -I$(LIBUNWIND_SRC)/src
+
+################################################################################
+# Global flags
+################################################################################
+CONFIG_FLAGS   += -D _LIBUNWIND_HAS_NO_THREADS  -D __ELF__  -D _LIBUNWIND_IS_NATIVE_ONLY		\
+		  -D _LIBUNWIND_SUPPORT_DWARF_UNWIND -D _LIBUNWIND_IS_BAREMETAL
+
+LIBUNWIND_CFLAGS-y      +=  $(CONFIG_FLAGS)
+LIBUNWIND_CXXFLAGS-y    +=  $(CONFIG_FLAGS)
+
+LIBUNWIND_SUPPRESS_FLAGS += -Wno-unused-parameter -Wno-maybe-uninitialized
+LIBUNWIND_CFLAGS-y   += $(LIBUNWIND_SUPPRESS_FLAGS)
+LIBUNWIND_CXXFLAGS-y += $(LIBUNWIND_SUPPRESS_FLAGS)
+
+################################################################################
+# Library sources
+################################################################################
+LIBUNWIND_SRCS-y += $(LIBUNWIND_SRC)/src/UnwindLevel1.c
+LIBUNWIND_SRCS-y += $(LIBUNWIND_SRC)/src/Unwind-sjlj.c
+LIBUNWIND_SRCS-y += $(LIBUNWIND_SRC)/src/UnwindLevel1-gcc-ext.c
+LIBUNWIND_SRCS-y += $(LIBUNWIND_SRC)/src/libunwind.cpp
+LIBUNWIND_SRCS-y += $(LIBUNWIND_SRC)/src/Unwind-EHABI.cpp
+LIBUNWIND_SRCS-y += $(LIBUNWIND_SRC)/src/UnwindRegistersRestore.S
+LIBUNWIND_SRCS-y += $(LIBUNWIND_SRC)/src/UnwindRegistersSave.S

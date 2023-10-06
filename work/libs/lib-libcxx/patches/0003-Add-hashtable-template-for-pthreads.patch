@@ -1,0 +1,51 @@
+From 215ae6f079c9d3e1ed21fc549e41ef5d6d796d71 Mon Sep 17 00:00:00 2001
+From: Teodora Serbanescu <teo.serbanescu16@gmail.com>
+Date: Thu, 18 Apr 2019 15:15:33 +0300
+Subject: [PATCH] Add hashtable template for pthreads
+
+Signed-off-by: Teodora Serbanescu <teo.serbanescu16@gmail.com>
+---
+ include/utility | 20 +++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+
+diff --git a/include/utility b/include/utility
+index ed9bf03..c5b74fd 100644
+--- a/include/utility
++++ b/include/utility
+@@ -205,6 +205,10 @@ template <size_t I>
+ #include <cstdint>
+ #include <__debug>
+
++#if defined(_LIBCPP_HAS_THREAD_API_PTHREAD)
++#include <pthread.h>
++#endif
++
+ #if !defined(_LIBCPP_HAS_NO_PRAGMA_SYSTEM_HEADER)
+ #pragma GCC system_header
+ #endif
+@@ -1473,6 +1478,22 @@ struct _LIBCPP_TEMPLATE_VIS hash<double>
+     }
+ };
+ 
++#if defined(_LIBCPP_HAS_THREAD_API_PTHREAD)
++template <>
++struct _LIBCPP_TEMPLATE_VIS hash<pthread_t>
++    : public __scalar_hash<size_t>
++{
++    _LIBCPP_INLINE_VISIBILITY
++    size_t operator()(pthread_t __v) const _NOEXCEPT
++    {
++       // -0.0 and 0.0 should return same hash
++       if (__v == 0)
++           return 0;
++        return __scalar_hash<size_t>::operator()((size_t) __v.p);
++    }
++};
++#endif
++
+ template <>
+ struct _LIBCPP_TEMPLATE_VIS hash<long double>
+     : public __scalar_hash<long double>
+-- 
+2.11.0
+

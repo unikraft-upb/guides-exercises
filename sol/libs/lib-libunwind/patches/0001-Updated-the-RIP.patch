@@ -1,0 +1,37 @@
+From 863cddb4f2f89b51b38785f49b6c7cf3fc9e3f2c Mon Sep 17 00:00:00 2001
+From: Vlad-Andrei Badoiu <vlad_andrei.badoiu@stud.acs.upb.ro>
+Date: Mon, 3 Dec 2018 18:59:59 +0200
+Subject: [PATCH] Updated the RIP
+
+This patch changes the RIP that is saved
+by the unw_getcontext function. Now the
+RIP is pointing to the throw that has
+triggered the exception.
+
+Signed-off-by: Vlad-Andrei Badoiu <vlad_andrei.badoiu@stud.acs.upb.ro>
+---
+ UnwindRegistersSave.S | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/UnwindRegistersSave.S b/UnwindRegistersSave.S
+index 07db14b..8223ea1 100644
+--- a/src/UnwindRegistersSave.S
++++ b/src/UnwindRegistersSave.S
+@@ -88,7 +88,13 @@ DEFINE_LIBUNWIND_FUNCTION(unw_getcontext)
+   movq  %r13,104(PTR)
+   movq  %r14,112(PTR)
+   movq  %r15,120(PTR)
+-  movq  (%rsp),TMP
++  push %rax 
++  movq %rbp, (%rax)
++  movq (%rax), %rax
++  addq $8, %rax
++  movq (%rax), %rax
++  movq  %rax, TMP
++  pop %rax 
+   movq  TMP,128(PTR) # store return address as rip
+   # skip rflags
+   # skip cs
+-- 
+2.19.2
+

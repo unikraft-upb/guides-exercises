@@ -1,0 +1,19 @@
+#include <uk/config.h>
+
+#ifdef CONFIG_CXX_THREADS
+#if !defined(__linux__)
+#define __linux__
+#endif
+#else
+#if !defined(_LIBCPP_HAS_NO_THREADS)
+#define _LIBCPP_HAS_NO_THREADS
+#endif
+#endif
+
+#if !defined(_LIBCPP_BUILDING_LIBRARY)
+#define _LIBCPP_BUILDING_LIBRARY
+#endif
+
+#if defined( __arm__) || defined(__ARM_64__)
+#undef __FLT16_MANT_DIG__
+#endif

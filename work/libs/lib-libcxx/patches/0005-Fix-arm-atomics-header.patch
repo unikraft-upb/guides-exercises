@@ -1,0 +1,19 @@
+--- a/src/include/atomic_support.h	2020-01-28 13:33:44.139173682 +0100
++++ b/src/include/atomic_support.h	2020-01-28 13:34:43.986484257 +0100
+@@ -12,6 +12,7 @@
+ 
+ #include "__config"
+ #include "memory" // for __libcpp_relaxed_load
++#include <uk/arch/atomic.h>
+ 
+ #if defined(__clang__) && __has_builtin(__atomic_load_n)             \
+                        && __has_builtin(__atomic_store_n)            \
+@@ -80,7 +81,7 @@
+ _ValueType __libcpp_atomic_add(_ValueType* __val, _AddType __a,
+                                int __order = _AO_Seq)
+ {
+-    return __atomic_add_fetch(__val, __a, __order);
++  return ukarch_fetch_add(__val, __a);
+ }
+ 
+ template <class _ValueType>
