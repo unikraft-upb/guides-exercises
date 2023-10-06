@@ -1,0 +1,28 @@
+--- a/include/memory	2020-01-28 13:27:53.843204834 +0100
++++ b/include/memory	2020-01-28 13:29:45.109925361 +0100
+@@ -675,6 +675,7 @@
+ _LIBCPP_PUSH_MACROS
+ #include <__undef_macros>
+ 
++#include <uk/arch/atomic.h>
+ 
+ _LIBCPP_BEGIN_NAMESPACE_STD
+ 
+@@ -3458,7 +3459,7 @@
+ __libcpp_atomic_refcount_increment(_Tp& __t) _NOEXCEPT
+ {
+ #if defined(_LIBCPP_HAS_BUILTIN_ATOMIC_SUPPORT) && !defined(_LIBCPP_HAS_NO_THREADS)
+-    return __atomic_add_fetch(&__t, 1, __ATOMIC_RELAXED);
++    return ukarch_fetch_add(&__t, 1);
+ #else
+     return __t += 1;
+ #endif
+@@ -3469,7 +3470,7 @@
+ __libcpp_atomic_refcount_decrement(_Tp& __t) _NOEXCEPT
+ {
+ #if defined(_LIBCPP_HAS_BUILTIN_ATOMIC_SUPPORT) && !defined(_LIBCPP_HAS_NO_THREADS)
+-    return __atomic_add_fetch(&__t, -1, __ATOMIC_ACQ_REL);
++  return ukarch_dec(&__t);
+ #else
+     return __t -= 1;
+ #endif

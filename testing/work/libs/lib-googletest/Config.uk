@@ -1,0 +1,10 @@
+menuconfig LIBGOOGLETEST
+    bool "Google Testing and Mocking Framework"
+    select LIBCXX
+    default n
+
+if LIBGOOGLETEST
+    config LIBGOOGLETEST_BUILD_MAIN
+    bool "Build googletest with main"
+    default n
+endif

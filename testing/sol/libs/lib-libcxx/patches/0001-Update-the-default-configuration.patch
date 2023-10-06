@@ -1,0 +1,26 @@
+From d8d1e8312a8cec9d163fb4713f3ec622b920e75d Mon Sep 17 00:00:00 2001
+From: Vlad-Andrei Badoiu <vlad_andrei.badoiu@stud.acs.upb.ro>
+Date: Thu, 4 Apr 2019 19:06:08 +0300
+Subject: [PATCH 1/1] Update the default configuration
+
+Signed-off-by: Vlad-Andrei Badoiu <vlad_andrei.badoiu@stud.acs.upb.ro>
+---
+ include/__config | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/__config b/include/__config
+index 738d891..9a5659b 100644
+--- a/include/__config
++++ b/include/__config
+@@ -23,6 +23,8 @@
+ 
+ #ifdef __cplusplus
+ 
++#include <__config_unikraft>
++
+ #ifdef __GNUC__
+ #  define _GNUC_VER (__GNUC__ * 100 + __GNUC_MINOR__)
+ // The _GNUC_VER_NEW macro better represents the new GCC versioning scheme
+-- 
+2.20.1
+

@@ -1,0 +1,5 @@
+menuconfig LIBUNWIND
+    bool "libunwind - unwinder"
+	select LIBNOLIBC if !HAVE_LIBC
+	select LIBCOMPILER_RT
+    default n

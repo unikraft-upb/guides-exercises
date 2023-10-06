@@ -1,0 +1,40 @@
+From d8d29b3dc00ff53e4813533a4154ce7249c4d415 Mon Sep 17 00:00:00 2001
+From: Vlad-Andrei Badoiu <vlad_andrei.badoiu@stud.acs.upb.ro>
+Date: Thu, 28 Mar 2019 18:57:17 +0200
+Subject: [PATCH 1/1] Change from long double function to double
+
+Signed-off-by: Vlad-Andrei Badoiu <vlad_andrei.badoiu@stud.acs.upb.ro>
+---
+ include/locale | 2 +-
+ src/string.cpp | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/locale b/include/locale
+index e240799..f7a3f09 100644
+--- a/include/locale
++++ b/include/locale
+@@ -817,7 +817,7 @@ double __do_strtod<double>(const char* __a, char** __p2) {
+ template <>
+ inline _LIBCPP_INLINE_VISIBILITY
+ long double __do_strtod<long double>(const char* __a, char** __p2) {
+-    return strtold_l(__a, __p2, _LIBCPP_GET_C_LOCALE);
++    return strtod_l(__a, __p2, _LIBCPP_GET_C_LOCALE);
+ }
+ 
+ template <class _Tp>
+diff --git a/src/string.cpp b/src/string.cpp
+index d7ebdd3..9e7a85c 100644
+--- a/src/string.cpp
++++ b/src/string.cpp
+@@ -217,7 +217,7 @@ inline
+ long double
+ as_float( const string& func, const string& s, size_t* idx )
+ {
+-    return as_float_helper<long double>( func, s, idx, strtold );
++    return as_float_helper<long double>( func, s, idx, strtod );
+ }
+ 
+ template<>
+-- 
+2.20.1
+
